@@ -1,3 +1,6 @@
+import { findClosestPolychromosColor } from "../../utils/color-matcher";
+import { Card } from "@/components/ui/card";
+
 interface ColorDisplayProps {
   color: {
     r: number;
@@ -8,22 +11,28 @@ interface ColorDisplayProps {
 
 export function ColorDisplay({ color }: ColorDisplayProps) {
   const colorString = `rgb(${color.r}, ${color.g}, ${color.b})`;
-  const hexColor = `#${color.r.toString(16).padStart(2, '0')}${color.g.toString(16).padStart(2, '0')}${color.b.toString(16).padStart(2, '0')}`;
-
+  const matchedColor = findClosestPolychromosColor(color.r, color.g, color.b);
+  
   return (
-    <div className="flex items-center gap-4">
-      <div
-        className="w-16 h-16 rounded-md shadow-md"
-        style={{ backgroundColor: colorString }}
-      />
-      <div className="space-y-1">
-        <p className="text-sm font-medium">
-          RGB: {color.r}, {color.g}, {color.b}
-        </p>
-        <p className="text-sm font-medium">
-          HEX: {hexColor.toUpperCase()}
-        </p>
+    <Card className="p-4 space-y-4">
+      <div className="space-y-2">
+        <div 
+          className="w-full h-20 rounded-md border"
+          style={{ backgroundColor: colorString }}
+        />
+        <p className="text-sm font-medium">Selected Color: {colorString}</p>
       </div>
-    </div>
+      
+      <div className="space-y-2">
+        <div 
+          className="w-full h-20 rounded-md border"
+          style={{ backgroundColor: `rgb(${matchedColor.rgb.join(',')})` }}
+        />
+        <div className="text-sm space-y-1">
+          <p className="font-medium">Closest Polychromos Pencil:</p>
+          <p>#{matchedColor.number} - {matchedColor.name}</p>
+        </div>
+      </div>
+    </Card>
   );
 } 
