@@ -20,7 +20,7 @@ export default function Home() {
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const VALID_IMAGE_TYPES: ValidImageType[] = ['image/jpeg', 'image/png', 'image/webp']
-  const MAX_SIZE_MB = 5
+  const MAX_SIZE_MB = 10
 
   function handleDragOver(e: DragEvent<HTMLDivElement>) {
     e.preventDefault()
