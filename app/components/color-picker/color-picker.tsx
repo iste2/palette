@@ -2,6 +2,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ColorDisplay } from "@/app/components/color-picker/color-display";
+import { ColorPalette } from "@/app/components/color-picker/color-palette";
+import { nanoid } from "nanoid";
+import { findClosestPolychromosColor } from "@/app/utils/color-matcher";
 
 interface ColorPickerProps {
   className?: string;
@@ -19,6 +22,11 @@ export function ColorPicker({ className }: ColorPickerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [selectedPoint, setSelectedPoint] = useState<ColorPoint | null>(null);
   const [imageUrl, setImageUrl] = useState<string>("");
+  const [paletteColors, setPaletteColors] = useState<Array<{
+    id: string;
+    original: { r: number; g: number; b: number };
+    matched: ReturnType<typeof findClosestPolychromosColor>;
+  }>>([]);
 
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -88,46 +96,66 @@ export function ColorPicker({ className }: ColorPickerProps) {
   }, [getPixelColor]);
 
   return (
-    <div className="space-y-4">
-      <input
-        type="file"
-        accept="image/*"
-        onChange={handleImageUpload}
-        className="block w-full text-sm text-slate-500 mb-4
-          file:mr-4 file:py-2 file:px-4
-          file:rounded-full file:border-0
-          file:text-sm file:font-semibold
-          file:bg-violet-50 file:text-violet-700
-          hover:file:bg-violet-100"
-      />
-      
-      {imageUrl ? (
-        <div
-          ref={containerRef}
-          className="relative cursor-crosshair"
-          onClick={handleImageClick}
-        >
-          <img
-            ref={imageRef}
-            src={imageUrl}
-            alt="Color picker image"
-            className={className}
-          />
-          
-          <canvas
-            ref={canvasRef}
-            className="hidden"
-          />
-        </div>
-      ) : (
-        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
-          <p className="text-gray-500">Upload an image to start picking colors</p>
-        </div>
-      )}
+    <div className="grid gap-6 lg:grid-cols-[1fr,300px]">
+      <div className="space-y-6">
+        <input
+          type="file"
+          accept="image/*"
+          onChange={handleImageUpload}
+          className="block w-full text-sm text-slate-500 mb-4
+            file:mr-4 file:py-2 file:px-4
+            file:rounded-full file:border-0
+            file:text-sm file:font-semibold
+            file:bg-violet-50 file:text-violet-700
+            hover:file:bg-violet-100"
+        />
+        
+        {imageUrl ? (
+          <div
+            ref={containerRef}
+            className="relative cursor-crosshair"
+            onClick={handleImageClick}
+          >
+            <img
+              ref={imageRef}
+              src={imageUrl}
+              alt="Color picker image"
+              className={className}
+            />
+            
+            <canvas
+              ref={canvasRef}
+              className="hidden"
+            />
+          </div>
+        ) : (
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center">
+            <p className="text-gray-500">Upload an image to start picking colors</p>
+          </div>
+        )}
 
-      {selectedPoint && (
-        <ColorDisplay color={selectedPoint.color} />
-      )}
+        {selectedPoint && (
+          <ColorDisplay
+            color={selectedPoint.color}
+            onAddToPalette={(color) => {
+              setPaletteColors((colors) => [
+                ...colors,
+                { id: nanoid(), ...color },
+              ]);
+            }}
+          />
+        )}
+      </div>
+      <div>
+        <ColorPalette
+          colors={paletteColors}
+          onRemoveColor={(id) => {
+            setPaletteColors((colors) =>
+              colors.filter((color) => color.id !== id)
+            );
+          }}
+        />
+      </div>
     </div>
   );
 } 
