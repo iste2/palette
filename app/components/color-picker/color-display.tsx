@@ -1,4 +1,4 @@
-import { findClosestPolychromosColor } from "../../utils/color-matcher";
+import { findClosestPolychromosColor } from "@/app/utils/color-matcher";
 import { Card } from "@/components/ui/card";
 
 interface ColorDisplayProps {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ColorDisplay } from "./color-display";
+import { ColorDisplay } from "@/app/components/color-picker/color-display";
 
 interface ColorPickerProps {
   className?: string;
